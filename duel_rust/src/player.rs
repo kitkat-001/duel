@@ -1,6 +1,6 @@
 use godot::prelude::*;
 use godot::prelude::real_consts::FRAC_PI_2;
-use godot::engine::{INode3D, Node3D, InputEvent, InputEventMouseMotion, PhysicsRayQueryParameters3D};
+use godot::engine::{INode3D, Node3D, InputEvent, InputEventMouseMotion, PhysicsRayQueryParameters3D, CollisionObject3D};
 use godot::engine::input::MouseMode;
 use godot::engine::utilities::clampf;
 
@@ -43,6 +43,12 @@ impl INode3D for Player {
     }
 }
 
+#[godot_api]
+impl Player {
+    #[signal]
+    fn shot(body: Gd<CollisionObject3D>);
+}
+
 impl Player {
     fn set_camera(&mut self) {
         if self.base.get_child_count() > 0 {
@@ -83,7 +89,7 @@ impl Player {
                 .direct_space_state()?
                 .intersect_ray(query)
                 .get(StringName::from("collider"))?;
-            print(&[collider.to_variant()])
+            self.base.emit_signal(StringName::from("shot"), &[collider.to_variant()]);
         }
         Some(())
     }

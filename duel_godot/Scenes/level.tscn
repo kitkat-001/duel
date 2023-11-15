@@ -22,9 +22,12 @@ texture = SubResource("CanvasTexture_6xpxi")
 [node name="Player" parent="." instance=ExtResource("1_1axgi")]
 
 [node name="Dummy" parent="." instance=ExtResource("2_nqvpi")]
+fall_speed = 1.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 
 [node name="Terrain" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 material_override = SubResource("StandardMaterial3D_y4wnv")
 size = Vector3(100, 1, 100)
+
+[connection signal="shot" from="Player" to="Dummy" method="on_shot"]
