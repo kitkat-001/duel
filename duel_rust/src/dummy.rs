@@ -21,8 +21,8 @@ impl INode3D for Dummy {
         }
     }
 
-    fn process(&mut self, _delta: f64) {
-        if self.head.is_none() || self.body.is_none() { self.get_colliders(); }
+    fn ready(&mut self) {
+        self.get_colliders();
     }
 }
 
