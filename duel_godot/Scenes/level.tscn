@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dl7tfx0g5pgmu"]
+
+[ext_resource type="PackedScene" uid="uid://cb6resdlqsclu" path="res://Scenes/player.tscn" id="1_1axgi"]
+[ext_resource type="PackedScene" uid="uid://c7ul3cgi7u7uc" path="res://Scenes/dummy.tscn" id="2_nqvpi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y4wnv"]
+albedo_color = Color(0, 1, 0, 1)
+
+[node name="Level" type="Node3D"]
+
+[node name="Player" parent="." instance=ExtResource("1_1axgi")]
+
+[node name="Dummy" parent="." instance=ExtResource("2_nqvpi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+
+[node name="Terrain" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+material_override = SubResource("StandardMaterial3D_y4wnv")
+size = Vector3(100, 1, 100)
