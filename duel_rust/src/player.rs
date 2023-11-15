@@ -75,11 +75,13 @@ impl Player {
         }
     }
 
-    fn shoot(&self, event: Gd<InputEvent>) {
-        let mouse_event = event.try_cast::<InputEventAction>();
-        if let Some(mouse_event) = mouse_event {
-            if mouse_event.action() == StringName::from("shoot") {
-                
+    fn shoot(&mut self, event: Gd<InputEvent>) {
+        if let Some(raycast) = &mut self.raycast {
+            let mouse_event = event.try_cast::<InputEventAction>();
+            if let Some(mouse_event) = mouse_event {
+                if mouse_event.action() == StringName::from("shoot") {
+                    raycast.force_raycast_update();
+                }
             }
         }
     }
