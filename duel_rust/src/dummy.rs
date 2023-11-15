@@ -35,8 +35,13 @@ impl INode3D for Dummy {
     }
 
     fn process(&mut self, delta: f64) {
-        if self.is_dead && self.base.rotation().x < FRAC_PI_2 {
-            self.base.rotate(Vector3::RIGHT, self.fall_speed * delta as f32);
+        if self.is_dead 
+        {
+            if self.base.rotation().x < FRAC_PI_2 {
+                self.base.rotate(Vector3::RIGHT, self.fall_speed * delta as f32);
+            } else {
+                self.base.queue_free();
+            }
         }
     }
 }

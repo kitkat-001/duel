@@ -1,6 +1,7 @@
 use godot::prelude::*;
 mod player;
 mod dummy;
+mod skybox;
 
 struct MyExtension;
 

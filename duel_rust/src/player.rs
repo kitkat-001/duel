@@ -11,7 +11,8 @@ use super::gd_print;
 #[class(base=Node3D)]
 struct Player {
     camera: Option<Gd<Camera3D>>,
-    delta: real,
+    delta: f32,
+    has_shot: bool,
 
     #[base]
     base: Base<Node3D>
@@ -23,6 +24,7 @@ impl INode3D for Player {
         Self {
             camera: None,
             delta: 0., 
+            has_shot: false,
             base
         } 
     }
@@ -39,7 +41,9 @@ impl INode3D for Player {
 
     fn input(&mut self, event: Gd<InputEvent>) {
         self.set_camera_rotation(&event);
-        self.shoot(&event);
+        if !self.has_shot {
+            self.shoot(&event);
+        }
     }
 }
 
@@ -81,6 +85,7 @@ impl Player {
     fn shoot(&mut self, event: &Gd<InputEvent>) -> Option<()> {
         let camera = self.camera.clone()?;
         if event.is_action_pressed(StringName::from("shoot")) {
+            self.has_shot = true;
             let query = PhysicsRayQueryParameters3D::create(
                 self.base.global_position() + 1.5 * Vector3::UP, 
                 self.base.global_position() + 1.5 * Vector3::UP - 100. * camera.global_transform().basis.col_c()
@@ -93,4 +98,5 @@ impl Player {
         }
         Some(())
     }
+
 }
