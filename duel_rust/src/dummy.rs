@@ -2,6 +2,8 @@ use godot::prelude::*;
 use godot::prelude::real_consts::FRAC_PI_2;
 use godot::engine::{Node3D, INode3D, StaticBody3D, CollisionObject3D};
 
+use super::sign::*;
+
 #[allow(unused_imports)]
 use super::gd_print;
 
@@ -13,6 +15,8 @@ struct Dummy {
     is_dead: bool,
     #[export]
     fall_speed: f32,
+    #[export]
+    sign_list: Option<Gd<SignList>>,
 
     #[base]
     base: Base<Node3D>
@@ -26,6 +30,7 @@ impl INode3D for Dummy {
             body: None,
             is_dead: false,
             fall_speed: 0.,
+            sign_list: None,
             base
         }
     }
@@ -55,11 +60,13 @@ impl Dummy {
             if let Some(head) = &self.head {
                 if body == *head {
                     self.is_dead = true;
+                    self.activate_sign();
                 }
             }
             if let Some(dummy_body) = &self.body {
                 if body == *dummy_body {
                     self.is_dead = true;
+                    self.activate_sign();
                 }
             }
         }
@@ -85,6 +92,18 @@ impl Dummy {
                     None
                 }
             };
+        }
+    }
+
+    fn activate_sign(&mut self) {
+        gd_print("ye");
+        if let Some(sign_list) = &mut self.sign_list {
+            gd_print("ah");
+            if let Some(sign) = self.base.get_node(NodePath::from(sign_list.bind_mut().get_result_sign())) {
+                if let Some(mut sign) = sign.try_cast::<Sign>() {
+                    sign.bind_mut().is_on = true;
+                }
+            }
         }
     }
 }

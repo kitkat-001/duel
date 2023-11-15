@@ -2,6 +2,7 @@ use godot::prelude::*;
 mod player;
 mod dummy;
 mod skybox;
+mod sign;
 
 struct MyExtension;
 
