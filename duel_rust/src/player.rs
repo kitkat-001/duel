@@ -6,6 +6,7 @@ use godot::engine::utilities::clampf;
 
 #[allow(unused_imports)]
 use super::*;
+use super::enemy_spawner::*;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum PlayerState {
@@ -26,6 +27,8 @@ pub struct Player {
     camera_speed: f32,
     #[export]
     timer: Option<Gd<Timer>>,
+    #[export]
+    enemy_spawner: Option<Gd<EnemySpawner>>,
 
     #[base]
     base: Base<CharacterBody3D>
@@ -41,6 +44,7 @@ impl ICharacterBody3D for Player {
             hop_count: 10,
             camera_speed: 0.,
             timer: None,
+            enemy_spawner: None,
             base
         } 
     }
@@ -60,6 +64,9 @@ impl ICharacterBody3D for Player {
                 if is_facing_backwards && timer.is_stopped() {
                     timer.start();
                     self.hop(false);
+                    if let Some(spawner) = &mut self.enemy_spawner {
+                        spawner.bind_mut().spawn();
+                    }
                 }
             }
         }
@@ -81,7 +88,7 @@ impl ICharacterBody3D for Player {
 #[godot_api]
 impl Player {
     #[signal]
-    fn shot(body: Gd<CollisionObject3D>);
+    pub fn shot(body: Gd<CollisionObject3D>);
 
     #[func]
     fn timeout(&mut self) {
@@ -185,7 +192,7 @@ impl Player {
         }
     }
 
-    fn get_hop_count(&self) {
-        self.hop_count;
+    pub fn get_hop_count(&self) -> i32 {
+        self.hop_count
     }
 }

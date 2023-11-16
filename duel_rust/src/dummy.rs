@@ -9,7 +9,7 @@ use super::gd_print;
 
 #[derive(GodotClass)]
 #[class(base=Node3D)]
-struct Dummy {
+pub struct Dummy {
     head: Option<Gd<StaticBody3D>>,
     body: Option<Gd<StaticBody3D>>,
     is_dead: bool,

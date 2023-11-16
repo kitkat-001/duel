@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dl7tfx0g5pgmu"]
+[gd_scene load_steps=9 format=3 uid="uid://dl7tfx0g5pgmu"]
 
 [ext_resource type="PackedScene" uid="uid://cb6resdlqsclu" path="res://Scenes/player.tscn" id="1_1axgi"]
 [ext_resource type="PackedScene" uid="uid://53pp20qnsgu3" path="res://Scenes/skybox.tscn" id="3_r4tp0"]
@@ -7,6 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://drgvan15xn8fk" path="res://Scenes/tree.tscn" id="5_suxtk"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_6xpxi"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_hciy1"]
+font_size = 40
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y4wnv"]
 albedo_color = Color(0, 1, 0, 1)
@@ -22,7 +25,19 @@ position = Vector2(960, 540)
 scale = Vector2(10, 10)
 texture = SubResource("CanvasTexture_6xpxi")
 
-[node name="Player" parent="." instance=ExtResource("1_1axgi")]
+[node name="CountdownText" type="CountdownText" parent="CanvasLayer" node_paths=PackedStringArray("player")]
+player = NodePath("../../Player")
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.063
+offset_right = -0.320004
+offset_bottom = 19.76
+label_settings = SubResource("LabelSettings_hciy1")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Player" parent="." node_paths=PackedStringArray("enemy_spawner") instance=ExtResource("1_1axgi")]
+enemy_spawner = NodePath("../EnemySpawner")
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="Terrain" type="CSGBox3D" parent="."]
@@ -34,10 +49,9 @@ size = Vector3(100, 1, 100)
 player = NodePath("../Player")
 
 [node name="Sign" parent="." instance=ExtResource("4_f38pa")]
-off_position = Vector3(0, -1.1, 5)
-on_position = Vector3(0, 0, 5)
+off_position = Vector3(0, -1.1, 0)
 speed = 0.55
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.1, 5)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.1, 0)
 
 [node name="PlaySign" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_bil46")]
 player = NodePath("../Player")
@@ -95,6 +109,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, -12.5)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 100, 0)
+
+[node name="EnemySpawner" type="EnemySpawner" parent="." node_paths=PackedStringArray("player")]
+dummy_path = "res://Scenes/dummy.tscn"
+player = NodePath("../Player")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 
 [connection signal="shot" from="Player" to="Skybox" method="on_shot"]
 [connection signal="shot" from="Player" to="PlaySign" method="on_shot"]

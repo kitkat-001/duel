@@ -3,6 +3,8 @@ mod player;
 mod dummy;
 mod skybox;
 mod sign;
+mod countdown_text;
+mod enemy_spawner;
 
 struct MyExtension;
 
