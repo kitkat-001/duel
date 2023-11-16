@@ -1,4 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://53pp20qnsgu3"]
+[gd_scene load_steps=6 format=3 uid="uid://53pp20qnsgu3"]
+
+[ext_resource type="SignList" uid="uid://ds2ciuht4h0a1" path="res://Resources/sign_list.tres" id="1_wdfsu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_uhhfg"]
 
@@ -12,6 +14,7 @@ size = Vector3(100, 50, 1)
 size = Vector3(1, 50, 100)
 
 [node name="Skybox" type="Skybox"]
+sign_list = ExtResource("1_wdfsu")
 physics_material_override = SubResource("PhysicsMaterial_uhhfg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

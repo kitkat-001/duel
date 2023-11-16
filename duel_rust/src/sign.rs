@@ -36,7 +36,6 @@ impl INode3D for Sign {
     }
 
     fn process(&mut self, delta: f64) {
-        print(&[self.is_on.to_variant()]);
         self.move_towards(if self.is_on {self.on_position} else {self.off_position}, delta as f32);
     }
 }

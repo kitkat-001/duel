@@ -60,13 +60,13 @@ impl Dummy {
             if let Some(head) = &self.head {
                 if body == *head {
                     self.is_dead = true;
-                    self.activate_sign();
+                    self.activate_sign(GString::from("headshot!!!"));
                 }
             }
             if let Some(dummy_body) = &self.body {
                 if body == *dummy_body {
                     self.is_dead = true;
-                    self.activate_sign();
+                    self.activate_sign(GString::from("you win!"));
                 }
             }
         }
@@ -95,13 +95,12 @@ impl Dummy {
         }
     }
 
-    fn activate_sign(&mut self) {
-        gd_print("ye");
+    fn activate_sign(&mut self, text: GString) {
         if let Some(sign_list) = &mut self.sign_list {
-            gd_print("ah");
             if let Some(sign) = self.base.get_node(NodePath::from(sign_list.bind_mut().get_result_sign())) {
                 if let Some(mut sign) = sign.try_cast::<Sign>() {
                     sign.bind_mut().is_on = true;
+                    sign.bind_mut().change_text(text);
                 }
             }
         }

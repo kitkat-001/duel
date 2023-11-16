@@ -11,6 +11,7 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_54yn2"]
 
 [node name="Dummy" type="Dummy"]
+fall_speed = 1.0
 sign_list = ExtResource("1_vx7aa")
 
 [node name="Head" type="StaticBody3D" parent="."]
