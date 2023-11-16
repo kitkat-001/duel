@@ -4,6 +4,8 @@ use godot::engine::{Node3D, INode3D, Label3D};
 #[allow(unused_imports)]
 use super::gd_print;
 
+mod play_sign;
+
 #[derive(GodotClass)]
 #[class(base = Node3D)]
 pub struct Sign {
@@ -13,9 +15,12 @@ pub struct Sign {
     on_position: Vector3,
     #[export]
     speed: f32,
+    #[export]
     pub is_on: bool,
     #[export]
     label: Option<Gd<Label3D>>,
+    #[export]
+    text: GString,
 
     #[base]
     base: Base<Node3D>
@@ -31,8 +36,13 @@ impl INode3D for Sign {
             speed: 0.,
             is_on: false,
             label: None,
+            text: GString::from(""),
             base
         }
+    }
+
+    fn ready(&mut self) {
+        self.change_text(self.text.clone());
     }
 
     fn process(&mut self, delta: f64) {

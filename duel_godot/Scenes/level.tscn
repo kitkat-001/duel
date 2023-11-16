@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dl7tfx0g5pgmu"]
+[gd_scene load_steps=7 format=3 uid="uid://dl7tfx0g5pgmu"]
 
 [ext_resource type="PackedScene" uid="uid://cb6resdlqsclu" path="res://Scenes/player.tscn" id="1_1axgi"]
 [ext_resource type="PackedScene" uid="uid://53pp20qnsgu3" path="res://Scenes/skybox.tscn" id="3_r4tp0"]
+[ext_resource type="PackedScene" uid="uid://0ouh0uhphgdg" path="res://Scenes/play_sign.tscn" id="4_bil46"]
 [ext_resource type="PackedScene" uid="uid://ca0nssgn0514k" path="res://Scenes/sign.tscn" id="4_f38pa"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_6xpxi"]
@@ -21,6 +22,7 @@ scale = Vector2(10, 10)
 texture = SubResource("CanvasTexture_6xpxi")
 
 [node name="Player" parent="." instance=ExtResource("1_1axgi")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="Terrain" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
@@ -35,4 +37,8 @@ on_position = Vector3(0, 0, 5)
 speed = 0.55
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.1, 5)
 
+[node name="PlaySign" parent="." instance=ExtResource("4_bil46")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 5)
+
 [connection signal="shot" from="Player" to="Skybox" method="on_shot"]
+[connection signal="shot" from="Player" to="PlaySign" method="on_shot"]
