@@ -1,30 +1,46 @@
 use godot::prelude::*;
-use godot::prelude::real_consts::FRAC_PI_2;
-use godot::engine::{INode3D, Node3D, InputEvent, InputEventMouseMotion, PhysicsRayQueryParameters3D, CollisionObject3D};
+use godot::prelude::real_consts::{PI, FRAC_PI_2};
+use godot::engine::{CharacterBody3D, ICharacterBody3D, InputEvent, InputEventMouseMotion, PhysicsRayQueryParameters3D, CollisionObject3D, ProjectSettings, Timer};
 use godot::engine::input::MouseMode;
 use godot::engine::utilities::clampf;
 
 #[allow(unused_imports)]
-use super::gd_print;
+use super::*;
+
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub enum PlayerState {
+    NotDueling,
+    PreDuel,
+    Duel(bool)
+}
 
 #[derive(GodotClass)]
-#[class(base=Node3D)]
-struct Player {
+#[class(base=CharacterBody3D)]
+pub struct Player {
     camera: Option<Gd<Camera3D>>,
+    pub player_state: PlayerState,
     delta: f32,
-    has_shot: bool,
+    hop_count: i32,
+
+    #[export]
+    camera_speed: f32,
+    #[export]
+    timer: Option<Gd<Timer>>,
 
     #[base]
-    base: Base<Node3D>
+    base: Base<CharacterBody3D>
 }
 
 #[godot_api]
-impl INode3D for Player {
-    fn init(base: Base<Node3D>) -> Self {
+impl ICharacterBody3D for Player {
+    fn init(base: Base<CharacterBody3D>) -> Self {
         Self {
             camera: None,
+            player_state: PlayerState::NotDueling,
             delta: 0., 
-            has_shot: false,
+            hop_count: 10,
+            camera_speed: 0.,
+            timer: None,
             base
         } 
     }
@@ -37,12 +53,27 @@ impl INode3D for Player {
 
     fn process(&mut self, delta: f64) {
         self.delta = delta as f32;
+
+        if self.player_state == PlayerState::PreDuel {
+            let is_facing_backwards = self.face_backwards();
+            if let Some(ref mut timer) = &mut self.timer {
+                if is_facing_backwards && timer.is_stopped() {
+                    timer.start();
+                    self.hop(false);
+                }
+            }
+        }
+        self.do_gravity();
+        self.do_friction();
+        self.base.move_and_slide();
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
-        self.set_camera_rotation(&event);
-        if !self.has_shot {
-            self.shoot(&event);
+        if self.player_state != PlayerState::PreDuel {
+            self.set_camera_rotation(&event);
+            if self.can_shoot() {
+                self.shoot(&event);
+            }
         }
     }
 }
@@ -51,6 +82,18 @@ impl INode3D for Player {
 impl Player {
     #[signal]
     fn shot(body: Gd<CollisionObject3D>);
+
+    #[func]
+    fn timeout(&mut self) {
+        if self.hop_count > 0 {
+            self.hop(self.player_state != PlayerState::PreDuel);
+        } else {
+            if let Some(ref mut timer) = &mut self.timer {
+                timer.stop();
+            }
+            self.player_state = PlayerState::Duel(true);
+        }
+    }
 }
 
 impl Player {
@@ -85,7 +128,7 @@ impl Player {
     fn shoot(&mut self, event: &Gd<InputEvent>) -> Option<()> {
         let camera = self.camera.clone()?;
         if event.is_action_pressed(StringName::from("shoot")) {
-            self.has_shot = true;
+            self.use_ammo();
             let query = PhysicsRayQueryParameters3D::create(
                 self.base.global_position() + 1.5 * Vector3::UP, 
                 self.base.global_position() + 1.5 * Vector3::UP - 100. * camera.global_transform().basis.col_c()
@@ -94,9 +137,55 @@ impl Player {
                 .direct_space_state()?
                 .intersect_ray(query)
                 .get(StringName::from("collider"))?;
-            self.base.emit_signal(StringName::from("shot"), &[collider.to_variant()]);
+            self.base.call_deferred(StringName::from("emit_signal"), &[StringName::from("shot").to_variant(), collider.to_variant()]);
         }
         Some(())
     }
 
+    fn can_shoot(&self) -> bool {
+        [PlayerState::NotDueling, PlayerState::Duel(true)].contains(&self.player_state)
+    }
+
+    fn use_ammo(&mut self) {
+        if let PlayerState::Duel(_) = self.player_state {
+            self.player_state = PlayerState::Duel(false);
+        }
+    }
+
+    fn face_backwards(&mut self) -> bool {
+        if let Some(camera) = &mut self.camera {
+            let curr = camera.rotation();
+            let target = Vector3 {x: 0., y: PI, z: 0.};
+            let displacement = target - curr;
+            let dir = displacement.normalized();
+            let speed = min(self.camera_speed, displacement.length());
+            camera.set_rotation(curr + dir * speed);
+            dir == Vector3::ZERO
+        } else { true } // Escape if camera can't be found.
+    }
+
+    fn hop(&mut self, is_going_forwards: bool) {
+        self.hop_count -= 1;
+        self.base.set_velocity(Vector3 { x: 0., y: 2.45, z: 2. * if is_going_forwards {1.} else {-1.} });
+    }
+
+    fn do_gravity(&mut self) {
+        let curr = self.base.velocity();
+        let grav_vector = ProjectSettings::singleton().get_setting(GString::from("physics/3d/default_gravity_vector")).to::<Vector3>();
+        let grav_magnitude = ProjectSettings::singleton().get_setting(GString::from("physics/3d/default_gravity")).to::<f32>();
+        self.base.set_velocity(curr + grav_vector * grav_magnitude * self.delta);
+    }
+
+    fn do_friction(&mut self) {
+        if self.base.is_on_floor() {
+            let y = self.base.velocity().y;
+            if y <= 0. {
+                self.base.set_velocity(Vector3::UP * y);
+            }
+        }
+    }
+
+    fn get_hop_count(&self) {
+        self.hop_count;
+    }
 }

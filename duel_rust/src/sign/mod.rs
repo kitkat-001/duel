@@ -2,7 +2,7 @@ use godot::prelude::*;
 use godot::engine::{Node3D, INode3D, Label3D};
 
 #[allow(unused_imports)]
-use super::gd_print;
+use super::*;
 
 mod play_sign;
 
@@ -66,8 +66,6 @@ impl Sign {
         self.base.set_position(curr + speed * dir);
     }
 }
-
-fn min(a: f32, b: f32) -> f32 {if a < b {a} else {b}}
 
 
 

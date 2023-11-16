@@ -2,6 +2,7 @@ use godot::prelude::*;
 use godot::engine::{StaticBody3D, IStaticBody3D, CollisionObject3D};
 
 use super::sign::*;
+use super::player::*;
 
 #[allow(unused_imports)]
 use super::gd_print;
@@ -11,6 +12,8 @@ use super::gd_print;
 struct Skybox {
     #[export]
     sign_list: Option<Gd<SignList>>,
+    #[export]
+    player: Option<Gd<Player>>,
 
     #[base]
     base: Base<StaticBody3D>
@@ -21,6 +24,7 @@ impl IStaticBody3D for Skybox {
     fn init(base: Base<StaticBody3D>) -> Self { 
         Self {
             sign_list: None,
+            player: None,
             base
         } 
     }
@@ -30,6 +34,12 @@ impl IStaticBody3D for Skybox {
 impl Skybox {
     #[func]
     fn on_shot(&mut self,  body: Gd<CollisionObject3D>) {
+        if let Some(player) = &self.player {
+            if player.bind().player_state == PlayerState::NotDueling {
+                return;
+            }
+        }
+        
         if let Some(body) = body.try_cast::<StaticBody3D>() {
             if body == *self.base {
                 if let Some(sign_list) = &mut self.sign_list {

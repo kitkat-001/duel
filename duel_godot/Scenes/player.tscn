@@ -1,8 +1,20 @@
-[gd_scene format=3 uid="uid://cb6resdlqsclu"]
+[gd_scene load_steps=2 format=3 uid="uid://cb6resdlqsclu"]
 
-[node name="Player" type="Player"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3gntn"]
+
+[node name="Player" type="Player" node_paths=PackedStringArray("timer")]
+camera_speed = 0.04
+timer = NodePath("Timer")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 keep_aspect = 0
 fov = 90.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_3gntn")
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="timeout" from="Timer" to="." method="timeout"]

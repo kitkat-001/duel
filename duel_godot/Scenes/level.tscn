@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://dl7tfx0g5pgmu"]
+[gd_scene load_steps=8 format=3 uid="uid://dl7tfx0g5pgmu"]
 
 [ext_resource type="PackedScene" uid="uid://cb6resdlqsclu" path="res://Scenes/player.tscn" id="1_1axgi"]
 [ext_resource type="PackedScene" uid="uid://53pp20qnsgu3" path="res://Scenes/skybox.tscn" id="3_r4tp0"]
 [ext_resource type="PackedScene" uid="uid://0ouh0uhphgdg" path="res://Scenes/play_sign.tscn" id="4_bil46"]
 [ext_resource type="PackedScene" uid="uid://ca0nssgn0514k" path="res://Scenes/sign.tscn" id="4_f38pa"]
+[ext_resource type="PackedScene" uid="uid://drgvan15xn8fk" path="res://Scenes/tree.tscn" id="5_suxtk"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_6xpxi"]
 
@@ -29,7 +30,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 material_override = SubResource("StandardMaterial3D_y4wnv")
 size = Vector3(100, 1, 100)
 
-[node name="Skybox" parent="." instance=ExtResource("3_r4tp0")]
+[node name="Skybox" parent="." node_paths=PackedStringArray("player") instance=ExtResource("3_r4tp0")]
+player = NodePath("../Player")
 
 [node name="Sign" parent="." instance=ExtResource("4_f38pa")]
 off_position = Vector3(0, -1.1, 5)
@@ -37,8 +39,62 @@ on_position = Vector3(0, 0, 5)
 speed = 0.55
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.1, 5)
 
-[node name="PlaySign" parent="." instance=ExtResource("4_bil46")]
+[node name="PlaySign" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_bil46")]
+player = NodePath("../Player")
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 5)
+
+[node name="Trees" type="Node" parent="."]
+
+[node name="Tree" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, 0)
+
+[node name="Tree2" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, 12.5)
+
+[node name="Tree3" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, 25)
+
+[node name="Tree4" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, 25)
+
+[node name="Tree5" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 25)
+
+[node name="Tree6" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, 25)
+
+[node name="Tree7" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 25)
+
+[node name="Tree8" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 12.5)
+
+[node name="Tree9" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, 0)
+
+[node name="Tree10" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, -12.5)
+
+[node name="Tree11" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 0, -25)
+
+[node name="Tree12" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0, -25)
+
+[node name="Tree13" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -25)
+
+[node name="Tree14" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0, -25)
+
+[node name="Tree15" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, -25)
+
+[node name="Tree16" parent="Trees" instance=ExtResource("5_suxtk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0, -12.5)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 100, 0)
 
 [connection signal="shot" from="Player" to="Skybox" method="on_shot"]
 [connection signal="shot" from="Player" to="PlaySign" method="on_shot"]
