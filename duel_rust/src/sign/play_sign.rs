@@ -51,6 +51,8 @@ impl PlaySign {
     fn start_duel(&mut self) {
         if let Some(ref mut player) = &mut self.player {
             player.bind_mut().player_state = PlayerState::PreDuel;
+            
+            player.bind_mut().hop_count = 10;
         }
     }
 

@@ -153,8 +153,10 @@ impl Player {
     fn shoot(&mut self, event: &Gd<InputEvent>) -> Option<()> {
         let camera = self.camera.clone()?;
         if event.is_action_pressed(StringName::from("shoot")) {
+            let Some(ref sign_list) = self.sign_list else {return None;};
+            let Some(ref result_sign) = sign_list.bind().result_sign(&self.base.clone().upcast()) else {return None;};
             if self.player_state == PlayerState::Duel(false) {
-                if self.hop_count == 0 {
+                if self.hop_count == 0 && !result_sign.bind().in_motion {
                     self.hop_count = 10;
                     let Some(ref mut sign_list) = self.sign_list else { return None; };
                     let sign = self.base.get_node(NodePath::from(sign_list.bind().get_result_sign()))?;

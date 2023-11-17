@@ -24,6 +24,7 @@ pub struct Sign {
     label: Option<Gd<Label3D>>,
     #[export]
     text: GString,
+    pub in_motion: bool,
 
     #[base]
     base: Base<Node3D>
@@ -40,6 +41,7 @@ impl INode3D for Sign {
             is_on: false,
             label: None,
             text: GString::from(""),
+            in_motion: false,
             base
         }
     }
@@ -66,6 +68,7 @@ impl Sign {
         let displacement = dest - curr;
         let dir = displacement.normalized();
         let speed = min(self.speed * delta, displacement.length());
+        self.in_motion = speed != 0.;
         self.base.set_position(curr + speed * dir);
     }
 }
@@ -100,6 +103,10 @@ impl IResource for SignList {
 
 #[godot_api]
 impl SignList {
+    pub fn result_sign(&self, node: &Gd<Node>) -> Option<Gd<Sign>> {
+        node.get_node(NodePath::from(self.result_sign.clone()))?.try_cast()
+    }
+
     pub fn play_sign(&self, node: &Gd<Node>) -> Option<Gd<PlaySign>> {
         node.get_node(NodePath::from(self.play_sign.clone()))?.try_cast()
     }
