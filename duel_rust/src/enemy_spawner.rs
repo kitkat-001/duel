@@ -32,7 +32,8 @@ impl EnemySpawner {
         let node = load::<PackedScene>(self.dummy_path.clone());
         let node = node.instantiate();
         if let Some(node) = node {
-            if let Some(node) = node.try_cast::<Dummy>() {
+            if let Some(mut node) = node.try_cast::<Dummy>() {
+                node.bind_mut().player = self.player.clone();
                 if let Some(player) = &mut self.player {
                     player.connect(StringName::from("shot"), node.callable("on_shot"));
                     self.base.add_child(node.upcast::<Node>());

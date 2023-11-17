@@ -3,6 +3,7 @@ use godot::prelude::real_consts::FRAC_PI_2;
 use godot::engine::{Node3D, INode3D, StaticBody3D, CollisionObject3D};
 
 use super::sign::*;
+use super::player::*;
 
 #[allow(unused_imports)]
 use super::gd_print;
@@ -17,6 +18,7 @@ pub struct Dummy {
     fall_speed: f32,
     #[export]
     sign_list: Option<Gd<SignList>>,
+    pub player: Option<Gd<Player>>,
 
     #[base]
     base: Base<Node3D>
@@ -31,6 +33,7 @@ impl INode3D for Dummy {
             is_dead: false,
             fall_speed: 0.,
             sign_list: None,
+            player: None,
             base
         }
     }
@@ -55,18 +58,20 @@ impl INode3D for Dummy {
 impl Dummy {
     #[func]
     fn on_shot(&mut self, body: Gd<CollisionObject3D>)  {
+        let Some(ref player) = self.player else {return;};
+        let time = player.bind().get_duel_timer();
         let body = body.try_cast::<StaticBody3D>();
         if let Some(body) = body {
             if let Some(head) = &self.head {
                 if body == *head {
                     self.is_dead = true;
-                    self.activate_sign(GString::from("headshot!!!"));
+                    self.activate_sign(GString::from(format!("headshot!!!\n time: {:.3}", time)));
                 }
             }
             if let Some(dummy_body) = &self.body {
                 if body == *dummy_body {
                     self.is_dead = true;
-                    self.activate_sign(GString::from("you win!"));
+                    self.activate_sign(GString::from(format!("you win!\n time: {:.3}", time)));
                 }
             }
         }

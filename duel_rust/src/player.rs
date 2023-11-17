@@ -27,6 +27,7 @@ pub struct Player {
     camera_speed: f32,
     #[export]
     timer: Option<Gd<Timer>>,
+    duel_timer: f64,
     #[export]
     enemy_spawner: Option<Gd<EnemySpawner>>,
 
@@ -44,6 +45,7 @@ impl ICharacterBody3D for Player {
             hop_count: 10,
             camera_speed: 0.,
             timer: None,
+            duel_timer: 0.,
             enemy_spawner: None,
             base
         } 
@@ -56,6 +58,11 @@ impl ICharacterBody3D for Player {
     }
 
     fn process(&mut self, delta: f64) {
+        if let PlayerState::Duel(var) = self.player_state { 
+            if var { self.duel_timer += delta; }
+        } else {
+            self.duel_timer = 0.;
+        }
         self.delta = delta as f32;
 
         if self.player_state == PlayerState::PreDuel {
@@ -194,5 +201,9 @@ impl Player {
 
     pub fn get_hop_count(&self) -> i32 {
         self.hop_count
+    }
+
+    pub fn get_duel_timer(&self) -> f64 {
+        self.duel_timer
     }
 }

@@ -34,11 +34,11 @@ impl IStaticBody3D for Skybox {
 impl Skybox {
     #[func]
     fn on_shot(&mut self,  body: Gd<CollisionObject3D>) {
-        if let Some(player) = &self.player {
-            if player.bind().player_state == PlayerState::NotDueling {
-                return;
-            }
+        let Some(ref player) = self.player else {return;};
+        if player.bind().player_state == PlayerState::NotDueling {
+            return;
         }
+        let time = player.bind().get_duel_timer();
         
         if let Some(body) = body.try_cast::<StaticBody3D>() {
             if body == *self.base {
@@ -46,7 +46,7 @@ impl Skybox {
                     if let Some(sign) = self.base.get_node(NodePath::from(sign_list.bind_mut().get_result_sign())) {
                         if let Some(mut sign) = sign.try_cast::<Sign>() {
                             sign.bind_mut().is_on = true;
-                            sign.bind_mut().change_text(GString::from("you lose :("));
+                            sign.bind_mut().change_text(GString::from(format!("you lose :(\n time: {:.3}", time)));
                         }
                     }
                 }
