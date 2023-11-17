@@ -5,6 +5,9 @@ use godot::engine::{Node3D, INode3D, Label3D};
 use super::*;
 
 mod play_sign;
+mod exit_sign;
+use play_sign::PlaySign;
+use exit_sign::ExitSign;
 
 #[derive(GodotClass)]
 #[class(base = Node3D)]
@@ -74,6 +77,10 @@ impl Sign {
 pub struct SignList {
     #[export]
     result_sign: GString,
+    #[export]
+    play_sign: GString,
+    #[export]
+    exit_sign: GString,
 
     #[base]
     _base: Base<Resource>
@@ -84,10 +91,20 @@ impl IResource for SignList {
     fn init(base: Base<Resource>) -> Self {
         Self {
             result_sign: GString::from(""),
+            play_sign: GString::from(""),
+            exit_sign: GString::from(""),
             _base:  base
         }
     }
 }
 
 #[godot_api]
-impl SignList {}
+impl SignList {
+    pub fn play_sign(&self, node: &Gd<Node>) -> Option<Gd<PlaySign>> {
+        node.get_node(NodePath::from(self.play_sign.clone()))?.try_cast()
+    }
+
+    pub fn exit_sign(&self, node: &Gd<Node>) -> Option<Gd<ExitSign>> {
+        node.get_node(NodePath::from(self.exit_sign.clone()))?.try_cast()
+    }
+}

@@ -1,10 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://cb6resdlqsclu"]
+[gd_scene load_steps=3 format=3 uid="uid://cb6resdlqsclu"]
+
+[ext_resource type="SignList" uid="uid://ds2ciuht4h0a1" path="res://Resources/sign_list.tres" id="1_86ff4"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3gntn"]
 
 [node name="Player" type="Player" node_paths=PackedStringArray("timer")]
 camera_speed = 0.04
 timer = NodePath("Timer")
+sign_list = ExtResource("1_86ff4")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)

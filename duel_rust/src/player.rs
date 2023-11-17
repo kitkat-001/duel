@@ -7,6 +7,7 @@ use godot::engine::utilities::clampf;
 #[allow(unused_imports)]
 use super::*;
 use super::enemy_spawner::*;
+use super::sign::*;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum PlayerState {
@@ -21,7 +22,7 @@ pub struct Player {
     camera: Option<Gd<Camera3D>>,
     pub player_state: PlayerState,
     delta: f32,
-    hop_count: i32,
+    pub hop_count: i32,
 
     #[export]
     camera_speed: f32,
@@ -30,6 +31,8 @@ pub struct Player {
     duel_timer: f64,
     #[export]
     enemy_spawner: Option<Gd<EnemySpawner>>,
+    #[export]
+    sign_list: Option<Gd<SignList>>,
 
     #[base]
     base: Base<CharacterBody3D>
@@ -47,6 +50,7 @@ impl ICharacterBody3D for Player {
             timer: None,
             duel_timer: 0.,
             enemy_spawner: None,
+            sign_list: None,
             base
         } 
     }
@@ -77,6 +81,13 @@ impl ICharacterBody3D for Player {
                 }
             }
         }
+
+        if self.player_state == PlayerState::Duel(false) && self.base.is_on_floor() && self.hop_count > 0 {
+            self.hop(true);
+            if self.hop_count == 0 {
+                self.player_state = PlayerState::NotDueling;
+            }
+        }
         self.do_gravity();
         self.do_friction();
         self.base.move_and_slide();
@@ -85,7 +96,7 @@ impl ICharacterBody3D for Player {
     fn input(&mut self, event: Gd<InputEvent>) {
         if self.player_state != PlayerState::PreDuel {
             self.set_camera_rotation(&event);
-            if self.can_shoot() {
+            if self.can_shoot() || self.player_state == PlayerState::Duel(false) {
                 self.shoot(&event);
             }
         }
@@ -142,6 +153,21 @@ impl Player {
     fn shoot(&mut self, event: &Gd<InputEvent>) -> Option<()> {
         let camera = self.camera.clone()?;
         if event.is_action_pressed(StringName::from("shoot")) {
+            if self.player_state == PlayerState::Duel(false) {
+                if self.hop_count == 0 {
+                    self.hop_count = 10;
+                    let Some(ref mut sign_list) = self.sign_list else { return None; };
+                    let sign = self.base.get_node(NodePath::from(sign_list.bind().get_result_sign()))?;
+                    sign.try_cast::<Sign>()?.bind_mut().is_on = false;
+                    let sign_list = sign_list.bind_mut();
+                    sign_list.play_sign(&self.base.clone().upcast())?.bind_mut().set_is_on(true);
+                    sign_list.exit_sign(&self.base.clone().upcast())?.bind_mut().set_is_on(true);
+                    if let Some(mut dummy) = self.base.get_node_or_null(NodePath::from("../EnemySpawner/Dummy")) {
+                        dummy.queue_free();
+                    }
+                }
+                return Some(())
+            }
             self.use_ammo();
             let query = PhysicsRayQueryParameters3D::create(
                 self.base.global_position() + 1.5 * Vector3::UP, 

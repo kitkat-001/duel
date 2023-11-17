@@ -2,3 +2,5 @@
 
 [resource]
 result_sign = "/root/Level/Sign"
+play_sign = "/root/Level/PlaySign"
+exit_sign = "/root/Level/ExitSign"

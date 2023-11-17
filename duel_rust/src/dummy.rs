@@ -51,6 +51,11 @@ impl INode3D for Dummy {
                 self.base.queue_free();
             }
         }
+
+        let Some(ref player) = self.player else {return;};
+        if player.bind().player_state == PlayerState::NotDueling {
+            self.base.queue_free();
+        }
     }
 }
 
@@ -66,6 +71,7 @@ impl Dummy {
                 if body == *head {
                     self.is_dead = true;
                     self.activate_sign(GString::from(format!("headshot!!!\n time: {:.3}", time)));
+                    return;
                 }
             }
             if let Some(dummy_body) = &self.body {
