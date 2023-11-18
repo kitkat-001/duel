@@ -40,7 +40,7 @@ vertical_alignment = 1
 
 [node name="Player" parent="." node_paths=PackedStringArray("enemy_spawner") instance=ExtResource("1_1axgi")]
 enemy_spawner = NodePath("../EnemySpawner")
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 
 [node name="Terrain" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
@@ -121,6 +121,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
 
 [node name="ExitSign" parent="." instance=ExtResource("5_1rxf6")]
 transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -2, 0, 5)
+
+[node name="DeathSign" parent="." instance=ExtResource("4_f38pa")]
+off_position = Vector3(0, -1, -10)
+on_position = Vector3(0, 1, -10)
+text = "You died :("
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0, -1, -10)
 
 [connection signal="shot" from="Player" to="Skybox" method="on_shot"]
 [connection signal="shot" from="Player" to="PlaySign" method="on_shot"]

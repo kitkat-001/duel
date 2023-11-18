@@ -33,6 +33,10 @@ pub struct Player {
     enemy_spawner: Option<Gd<EnemySpawner>>,
     #[export]
     sign_list: Option<Gd<SignList>>,
+    #[export]
+    fall_speed: f32,
+    pub is_dead: bool,
+    rotation: f32,
 
     #[base]
     base: Base<CharacterBody3D>
@@ -51,6 +55,9 @@ impl ICharacterBody3D for Player {
             duel_timer: 0.,
             enemy_spawner: None,
             sign_list: None,
+            fall_speed: 0.,
+            is_dead: false,
+            rotation: 0.,
             base
         } 
     }
@@ -62,6 +69,13 @@ impl ICharacterBody3D for Player {
     }
 
     fn process(&mut self, delta: f64) {
+        if self.is_dead {
+            self.die();
+            return;
+        } else {
+            self.undie();
+        }
+
         if let PlayerState::Duel(var) = self.player_state { 
             if var { self.duel_timer += delta; }
         } else {
@@ -155,8 +169,9 @@ impl Player {
         if event.is_action_pressed(StringName::from("shoot")) {
             let Some(ref sign_list) = self.sign_list else {return None;};
             let Some(ref result_sign) = sign_list.bind().result_sign(&self.base.clone().upcast()) else {return None;};
+            let Some(ref death_sign) = sign_list.bind().death_sign(&self.base.clone().upcast()) else {return None;};
             if self.player_state == PlayerState::Duel(false) {
-                if self.hop_count == 0 && !result_sign.bind().in_motion {
+                if self.hop_count == 0 && !result_sign.bind().in_motion && !death_sign.bind().in_motion {
                     self.hop_count = 10;
                     let Some(ref mut sign_list) = self.sign_list else { return None; };
                     let sign = self.base.get_node(NodePath::from(sign_list.bind().get_result_sign()))?;
@@ -164,6 +179,7 @@ impl Player {
                     let sign_list = sign_list.bind_mut();
                     sign_list.play_sign(&self.base.clone().upcast())?.bind_mut().set_is_on(true);
                     sign_list.exit_sign(&self.base.clone().upcast())?.bind_mut().set_is_on(true);
+                    self.is_dead = false;
                     if let Some(mut dummy) = self.base.get_node_or_null(NodePath::from("../EnemySpawner/Dummy")) {
                         dummy.queue_free();
                     }
@@ -233,5 +249,28 @@ impl Player {
 
     pub fn get_duel_timer(&self) -> f64 {
         self.duel_timer
+    }
+
+    fn die(&mut self) {
+        self.use_ammo();
+        if self.rotation > -FRAC_PI_2  {
+            self.base.rotate(Vector3::RIGHT, -self.fall_speed * self.delta);
+            self.rotation += -self.fall_speed * self.delta;
+        }
+        
+        let Some(ref sign_list) = self.sign_list else {return;};
+        let Some(ref mut death_sign) = sign_list.bind().death_sign(&self.base.clone().upcast()) else {return;};
+        death_sign.bind_mut().is_on = true;
+    }
+
+    fn undie(&mut self) {
+        if self.rotation < 0. {
+            self.base.rotate(Vector3::RIGHT, self.fall_speed * self.delta);
+            self.rotation += self.fall_speed * self.delta;
+        }
+
+        let Some(ref sign_list) = self.sign_list else {return;};
+        let Some(ref mut death_sign) = sign_list.bind().death_sign(&self.base.clone().upcast()) else {return;};
+        death_sign.bind_mut().is_on = false;
     }
 }

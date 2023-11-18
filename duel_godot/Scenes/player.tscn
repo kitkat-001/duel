@@ -8,6 +8,7 @@
 camera_speed = 0.04
 timer = NodePath("Timer")
 sign_list = ExtResource("1_86ff4")
+fall_speed = 1.0
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)

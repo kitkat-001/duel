@@ -17,6 +17,7 @@ radius = 0.375
 [node name="Dummy" type="Dummy"]
 fall_speed = 1.0
 sign_list = ExtResource("1_vx7aa")
+fire_time = 1.5
 
 [node name="Head" type="StaticBody3D" parent="."]
 physics_material_override = SubResource("PhysicsMaterial_m55gc")

@@ -84,6 +84,8 @@ pub struct SignList {
     play_sign: GString,
     #[export]
     exit_sign: GString,
+    #[export]
+    death_sign: GString,
 
     #[base]
     _base: Base<Resource>
@@ -96,6 +98,7 @@ impl IResource for SignList {
             result_sign: GString::from(""),
             play_sign: GString::from(""),
             exit_sign: GString::from(""),
+            death_sign: GString::from(""),
             _base:  base
         }
     }
@@ -113,5 +116,9 @@ impl SignList {
 
     pub fn exit_sign(&self, node: &Gd<Node>) -> Option<Gd<ExitSign>> {
         node.get_node(NodePath::from(self.exit_sign.clone()))?.try_cast()
+    }
+
+    pub fn death_sign(&self, node: &Gd<Node>) -> Option<Gd<Sign>> {
+        node.get_node(NodePath::from(self.death_sign.clone()))?.try_cast()
     }
 }

@@ -19,6 +19,8 @@ pub struct Dummy {
     #[export]
     sign_list: Option<Gd<SignList>>,
     pub player: Option<Gd<Player>>,
+    #[export]
+    fire_time: f32,
 
     #[base]
     base: Base<Node3D>
@@ -34,6 +36,7 @@ impl INode3D for Dummy {
             fall_speed: 0.,
             sign_list: None,
             player: None,
+            fire_time: -1.,
             base
         }
     }
@@ -52,9 +55,20 @@ impl INode3D for Dummy {
             }
         }
 
+        let mut should_player_die = false;
         let Some(ref player) = self.player else {return;};
-        if player.bind().player_state == PlayerState::NotDueling {
+        let player = player.bind();
+        if player.player_state == PlayerState::NotDueling {
             self.base.queue_free();
+        } else if player.player_state == PlayerState::Duel(true) && self.has_fired(player.get_duel_timer() as f32) {
+            should_player_die = true;
+        }
+        drop(player);
+        
+        let Some(ref mut player) = self.player else {return;};
+        let mut player = player.bind_mut();
+        if should_player_die {
+            player.is_dead = true;
         }
     }
 }
@@ -85,6 +99,7 @@ impl Dummy {
 }
 
 impl Dummy {
+
     fn get_colliders(&mut self) {
         if self.base.get_child_count() > 1 {
             let head_node = self.base.get_child(0);
@@ -115,5 +130,9 @@ impl Dummy {
                 }
             }
         }
+    }
+
+    pub fn has_fired(&self, time_elasped: f32) -> bool {
+        !self.is_dead &&  self.fire_time > 0. && self.fire_time <= time_elasped
     }
 }
